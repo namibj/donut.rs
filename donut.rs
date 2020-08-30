@@ -1,6 +1,9 @@
-fn main() {
+use std::io::Write;
+
+fn main() -> std::io::Result<()> {
     let mut ay: f64 = 0.0;
     let mut bee: f64 = 0.0;
+    let mut framecounter = 0;
 
     print!("\x1b[2J");
 
@@ -10,6 +13,7 @@ fn main() {
         let mut j: f64 = 0.0;
         let mut z = [0.00; 1760].to_vec();
         let mut b = [' '; 1760].to_vec();
+        let mut b_16 = [0 as u16; 1760];
 
         while 6.28 > j {
             j += 0.07;
@@ -42,11 +46,15 @@ fn main() {
                 {
                     z[o] = dee;
                     b[o] = ".,-~:;=!*#$@".chars().nth(en as usize).unwrap();
+                    b_16[o] = (en * ((u16::MAX as f64) / (8 as f64))) as u16;
                 }
             }
         }
 
         print!("\x1b[H");
+
+        let mut pgm = std::fs::File::create(format!("pgm/{:08}.pgm", framecounter))?;
+        write!(pgm, "P2\n{} {}\n{}\n", 80, 22, u16::MAX)?;
 
         while 1759 > k {
             k += 1;
@@ -57,12 +65,14 @@ fn main() {
                 } else {
                     '\n'
                 }
-            )
+            );
+            write!(pgm, "{} ", b_16[(k as usize)])?;
         }
 
         <std::io::Stdout as std::io::Write>::flush(&mut std::io::stdout()).unwrap();
         std::thread::sleep(std::time::Duration::from_millis(10));
         ay += 0.04;
         bee += 0.02;
+        framecounter += 1;
     }
 }

@@ -4,15 +4,13 @@ fn main() -> std::io::Result<()> {
     let mut ay: f64 = 0.0;
     let mut bee: f64 = 0.0;
     let mut framecounter = 0;
+    let mut pgm = std::fs::File::create("donut.pgm")?;
 
-    print!("\x1b[2J");
-
-    loop {
+    while framecounter < 50 * 60 * 1 {
         let mut k: isize = -1;
         let mut i: f64 = 0.0;
         let mut j: f64 = 0.0;
         let mut z = [0.00; 1760].to_vec();
-        let mut b = [' '; 1760].to_vec();
         let mut b_16 = [0 as u16; 1760];
 
         while 6.28 > j {
@@ -45,34 +43,22 @@ fn main() -> std::io::Result<()> {
                     && z.get(o).map_or(false, |z_o| dee > *z_o)
                 {
                     z[o] = dee;
-                    b[o] = ".,-~:;=!*#$@".chars().nth(en as usize).unwrap();
                     b_16[o] = (en * ((u16::MAX as f64) / (8 as f64))) as u16;
                 }
             }
         }
 
-        print!("\x1b[H");
-
-        let mut pgm = std::fs::File::create(format!("pgm/{:08}.pgm", framecounter))?;
         write!(pgm, "P2\n{} {}\n{}\n", 80, 22, u16::MAX)?;
 
         while 1759 > k {
             k += 1;
-            print!(
-                "{}",
-                if k % 80 != 0 {
-                    b[(k as usize)]
-                } else {
-                    '\n'
-                }
-            );
             write!(pgm, "{} ", b_16[(k as usize)])?;
         }
 
-        <std::io::Stdout as std::io::Write>::flush(&mut std::io::stdout()).unwrap();
-        std::thread::sleep(std::time::Duration::from_millis(10));
+        write!(pgm, "\n")?;
         ay += 0.04;
         bee += 0.02;
         framecounter += 1;
-    }
+    };
+    Ok(())
 }

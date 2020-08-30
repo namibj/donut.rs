@@ -1,14 +1,13 @@
 fn main() {
-    let mut k = 0;
     let mut ay: f64 = 0.0;
     let mut bee: f64 = 0.0;
-    let mut i: f64 = 0.0;
-    let mut j: f64 = 0.0;
-
 
     print!("\x1b[2J");
 
     loop {
+        let mut k: isize = -1;
+        let mut i: f64 = 0.0;
+        let mut j: f64 = 0.0;
         let mut z = [0.00; 1760].to_vec();
         let mut b = [' '; 1760].to_vec();
 
@@ -35,7 +34,12 @@ fn main() {
                 let o = (x + 80.00 * y) as usize;
                 let en = 8.00 * ((f * e - c * d * g) * m - c * d * e - f * g - l * d * n as f64);
 
-                if 22.00 > y && y > 0.00 && x > 0.00 && 80.00 > x && dee > z[o] {
+                if 22.00 > y
+                    && y > 0.00
+                    && x > 0.00
+                    && 80.00 > x
+                    && z.get(o).map_or(false, |z_o| dee > *z_o)
+                {
                     z[o] = dee;
                     b[o] = ".,-~:;=!*#$@".chars().nth(en as usize).unwrap();
                 }
@@ -48,14 +52,16 @@ fn main() {
             k += 1;
             print!(
                 "{}",
-                if k % 80 == 0 {
-                    b[k]
+                if k % 80 != 0 {
+                    b[(k as usize)]
                 } else {
                     '\n'
                 }
             )
         }
 
+        <std::io::Stdout as std::io::Write>::flush(&mut std::io::stdout()).unwrap();
+        std::thread::sleep(std::time::Duration::from_millis(10));
         ay += 0.04;
         bee += 0.02;
     }
